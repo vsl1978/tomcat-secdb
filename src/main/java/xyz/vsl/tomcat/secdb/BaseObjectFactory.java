@@ -14,10 +14,9 @@ import java.util.*;
  */
 class BaseObjectFactory {
 
-    public ResourceRef decryptResourceRef(ResourceRef resourceRef) throws Exception {
-        int idx = 0;
+    public ResourceRef decryptResourceRef(ResourceRef resourceRef, Name name) throws Exception {
         Properties properties = new Properties();
-        for (Enumeration en = resourceRef.getAll(); en.hasMoreElements(); idx++) {
+        for (Enumeration en = resourceRef.getAll(); en.hasMoreElements(); ) {
             RefAddr ra = (RefAddr) en.nextElement();
             String type = ra.getType();
             Object content = ra.getContent();
@@ -25,9 +24,12 @@ class BaseObjectFactory {
             if (value != null)
                 properties.setProperty(type, value);
         }
+        if (!properties.containsKey("name") && name != null)
+            properties.setProperty("name", name.toString());
         List<Integer> toRemove = new ArrayList<Integer>();
         List<RefAddr> toAdd = new ArrayList<RefAddr>();
 
+        int idx = 0;
         for (Enumeration en = resourceRef.getAll(); en.hasMoreElements(); idx++) {
             RefAddr ra = (RefAddr) en.nextElement();
             String type = ra.getType();
@@ -48,7 +50,6 @@ class BaseObjectFactory {
         for (RefAddr a : toAdd)
             resourceRef.add(a);
 
-        //System.out.println("getObjectInstance(obj=" + obj + ", name=" + name + ", nameCtx=" + nameCtx + ", env=" + environment + ")");
         return resourceRef;
     }
 

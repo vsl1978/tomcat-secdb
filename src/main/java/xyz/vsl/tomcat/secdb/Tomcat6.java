@@ -16,7 +16,8 @@ public class Tomcat6 extends BaseObjectFactory implements ObjectFactory {
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
         if (!(obj instanceof ResourceRef))
             return null;
-        ResourceRef resourceRef = decryptResourceRef((ResourceRef) obj);
+        System.out.println(obj);
+        ResourceRef resourceRef = decryptResourceRef((ResourceRef) obj, name);
         return new org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory().getObjectInstance(resourceRef, name, nameCtx, environment);
     }
 

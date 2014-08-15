@@ -28,7 +28,7 @@ public class Tomcat7 extends DataSourceFactory {
 
     public DataSource createDataSource(Properties properties, Context context, boolean XA) throws SQLException {
         Properties props = new Properties();
-        boolean skipName = properties.containsKey("name");
+        boolean skipName = !properties.containsKey("name");
         if (skipName && name != null)
             properties.setProperty("name", name);
         for (Enumeration e = properties.propertyNames(); e.hasMoreElements(); ) {

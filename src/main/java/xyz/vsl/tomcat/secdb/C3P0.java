@@ -20,7 +20,7 @@ public class C3P0 extends BaseObjectFactory implements ObjectFactory {
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
         if (!(obj instanceof ResourceRef))
             return null;
-        ResourceRef resourceRef = decryptResourceRef((ResourceRef) obj);
+        ResourceRef resourceRef = decryptResourceRef((ResourceRef) obj, name);
 
         ResourceRef c3p0 = new ResourceRef
                 ("com.mchange.v2.c3p0.ComboPooledDataSource",
