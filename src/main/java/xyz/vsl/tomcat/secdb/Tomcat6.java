@@ -16,9 +16,22 @@ public class Tomcat6 extends BaseObjectFactory implements ObjectFactory {
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
         if (!(obj instanceof ResourceRef))
             return null;
-        System.out.println(obj);
         ResourceRef resourceRef = decryptResourceRef((ResourceRef) obj, name);
-        return new org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory().getObjectInstance(resourceRef, name, nameCtx, environment);
+        String[] factoryClasses;
+        if (Tomcat.getMajorVersion() < 8)
+            factoryClasses = new String[] {"org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory", "org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"};
+        else
+            factoryClasses = new String[] {"org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"};
+
+        Either<ObjectFactory> factory = null;
+        for (String className : factoryClasses) {
+            factory = Tomcat.getInstance(className, ObjectFactory.class);
+            if (factory.getValue() != null)
+                break;
+        }
+        if (factory.getError() != null)
+            throw factory.getError();
+        return factory.getValue().getObjectInstance(resourceRef, name, nameCtx, environment);
     }
 
 }

@@ -11,4 +11,8 @@ public interface KeyProducer {
 
     public String getOptions();
 
+    public interface Factory {
+        public KeyProducer keyProducer(String options, String property, Properties properties);
+    }
+
 }

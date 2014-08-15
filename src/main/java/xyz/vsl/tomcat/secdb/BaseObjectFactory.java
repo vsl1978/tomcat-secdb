@@ -2,6 +2,7 @@ package xyz.vsl.tomcat.secdb;
 
 import org.apache.naming.ResourceRef;
 import xyz.vsl.tomcat.secdb.crypto.Helper;
+import xyz.vsl.tomcat.secdb.crypto.SaltedKey;
 
 import javax.naming.Context;
 import javax.naming.Name;
@@ -37,7 +38,7 @@ class BaseObjectFactory {
             if (!(content instanceof String))
                 continue;
             String value = (String)content;
-            String decrypted = Helper.decryptAll(value, type, properties);
+            String decrypted = Helper.decryptAll(value, type, properties, SaltedKey.FACTORY);
             if (value.equals(decrypted))
                 continue;
             toRemove.add(idx - toRemove.size());

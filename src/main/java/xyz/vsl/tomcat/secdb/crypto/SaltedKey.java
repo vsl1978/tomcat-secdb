@@ -8,33 +8,40 @@ import java.util.Properties;
 public class SaltedKey implements KeyProducer {
     private static String KEY = "fkjw2oiuw6ybucwe6tp";
 
-    private String key;
-    private boolean saltedByName;
-    private boolean saltedByProperty;
+    private String salt;
 
-    public SaltedKey(String targetProperty, Properties properties) {
-        this(targetProperty, properties, true, true);
+    public final static Factory FACTORY = new Factory() {
+        @Override
+        public KeyProducer keyProducer(String options, String property, Properties properties) {
+            return new SaltedKey(options == null ? "" : options);
+        }
+    };
+
+    public SaltedKey() {
+        int watchdog = 1024;
+        do {
+            long t = System.nanoTime() % 16777213;
+            byte[] b = new byte[3];
+            b[0] = (byte) (t & 255);
+            t = t >>> 8;
+            b[1] = (byte) (t & 255);
+            t = t >>> 8;
+            b[2] = (byte) (t & 255);
+            this.salt = Base64.encode(b);
+        } while ((this.salt.charAt(1) == 'u' || this.salt.charAt(1) == 'U') && watchdog-- > 0);
     }
 
-    public SaltedKey(String targetProperty, Properties properties, boolean saltedByName, boolean saltedByProperty) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(key);
-        if (saltedByName)
-            if (this.saltedByName = (properties.getProperty("name") != null))
-                sb.append(';').append(properties.getProperty("name"));
-        if (saltedByProperty)
-            if (this.saltedByProperty = (targetProperty != null))
-                sb.append(';').append(targetProperty);
-        key = sb.toString();
+    public SaltedKey(String salt) {
+        this.salt = salt;
     }
 
     @Override
     public String getText() {
-        return key;
+        return KEY + ";" + salt;
     }
 
     @Override
     public String getOptions() {
-        return (saltedByName ? "N" : "n") + (saltedByProperty ? "P" : "p");
+        return salt;
     }
 }

@@ -1,7 +1,9 @@
 package xyz.vsl.tomcat;
 
 import org.junit.Test;
+import xyz.vsl.tomcat.secdb.crypto.ContextKey;
 import xyz.vsl.tomcat.secdb.crypto.Helper;
+import xyz.vsl.tomcat.secdb.crypto.SaltedKey;
 
 import java.util.Properties;
 
@@ -19,7 +21,7 @@ public class EncryptionTest {
     private String decrypt(String s, String property) {
         Properties properties = new Properties();
         properties.setProperty("name", "TestDS");
-        return Helper.decryptAll(s, property, properties);
+        return Helper.decryptAll(s, property, properties, ContextKey.FACTORY);
     }
 
     @Test
@@ -72,4 +74,14 @@ public class EncryptionTest {
         decrypt("{AES:np}ZhkFve4N1x0kQ7N8JAOjeg==");
     }
 
+    @Test
+    public void cycle() {
+        String text = "password!";
+        String encrypted = Helper.encryptAndFormat(new SaltedKey(), text, false);
+        String decrypted = Helper.decryptAll(encrypted, "password", new Properties(), SaltedKey.FACTORY);
+        assertEquals("encrypt-decrypt (1)", text, decrypted);
+        encrypted = Helper.encryptAndFormat(new SaltedKey(), text, true);
+        decrypted = Helper.decryptAll(encrypted, "password", new Properties(), SaltedKey.FACTORY);
+        assertEquals("encrypt-decrypt (2)", text, decrypted);
+    }
 }

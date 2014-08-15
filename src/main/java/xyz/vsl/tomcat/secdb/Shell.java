@@ -1,5 +1,6 @@
 package xyz.vsl.tomcat.secdb;
 
+import xyz.vsl.tomcat.secdb.crypto.ContextKey;
 import xyz.vsl.tomcat.secdb.crypto.Helper;
 import xyz.vsl.tomcat.secdb.crypto.SaltedKey;
 
@@ -62,7 +63,7 @@ public class Shell {
                     continue;
                 }
                 target = arg.substring(2);
-                System.out.println(target+": "+ Helper.encryptAndFormat(new SaltedKey(target, properties), next, false));
+                System.out.println(target+": "+ Helper.encryptAndFormat(/*new ContextKey(target, properties)*/new SaltedKey(), next, false));
                 encrypted = true;
                 target = null;
                 i++;
@@ -86,7 +87,7 @@ public class Shell {
                 continue;
             }
 
-            System.out.println((target != null ? target+": " : "") + Helper.encryptAndFormat(new SaltedKey(target, properties), arg, true));
+            System.out.println((target != null ? target : arg) +": " + Helper.encryptAndFormat(/*new ContextKey(target, properties)*/new SaltedKey(), arg, true));
             encrypted = true;
             target = null;
         }

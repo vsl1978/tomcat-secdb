@@ -35,33 +35,31 @@ public class Helper {
         return sp;
     }
 
-    public static String decrypt(String part, String targetProperty, Properties properties) {
+    public static String decrypt(String part, String targetProperty, Properties properties, KeyProducer.Factory keyProducerFactory) {
         int pos = part.indexOf('}');
         if (pos < 0 || pos == part.length() - 1)
             return null;
         String secret = part.substring(pos + 1);
         int colon = part.lastIndexOf(':', pos);
-        boolean saltedByName = false;
-        boolean saltedByProperty = false;
         String algorithm;
+        String options;
         if (colon > 0) {
-            String opts = part.substring(colon, pos);
-            saltedByName = opts.indexOf('N') >= 0;
-            saltedByProperty = opts.indexOf('P') >= 0;
+            options = part.substring(colon + 1, pos);
             algorithm = part.substring(1, colon);
         } else {
+            options = "";
             algorithm = part.substring(1, pos);
         }
-        KeyProducer kp = new SaltedKey(targetProperty, properties, saltedByName, saltedByProperty);
+        KeyProducer kp = keyProducerFactory.keyProducer(options, targetProperty, properties);
         return new Encryptor().decrypt(Key.generate(algorithm, kp), secret);
     }
 
-    public static String decryptAll(String value, String targetProperty, Properties properties) {
+    public static String decryptAll(String value, String targetProperty, Properties properties, KeyProducer.Factory keyProducerFactory) {
         while (true) {
             StringParts sp = extract(value);
             if (sp.getText() == null)
                 return value;
-            value = sp.getHead() + decrypt(sp.getText(), targetProperty, properties) + sp.getTail();
+            value = sp.getHead() + decrypt(sp.getText(), targetProperty, properties, keyProducerFactory) + sp.getTail();
         }
     }
 }

@@ -22,8 +22,8 @@ public class C3P0 extends BaseObjectFactory implements ObjectFactory {
             return null;
         ResourceRef resourceRef = decryptResourceRef((ResourceRef) obj, name);
 
-        ResourceRef c3p0 = new ResourceRef
-                ("com.mchange.v2.c3p0.ComboPooledDataSource",
+        ResourceRef c3p0 = new ResourceRef(
+                "com.mchange.v2.c3p0.ComboPooledDataSource",
                 getString(resourceRef, ResourceRef.DESCRIPTION),
                 getString(resourceRef, ResourceRef.SCOPE),
                 getString(resourceRef, ResourceRef.AUTH),

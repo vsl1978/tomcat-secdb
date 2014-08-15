@@ -4,6 +4,7 @@ import org.apache.tomcat.jdbc.pool.DataSourceFactory;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.apache.tomcat.jdbc.pool.XADataSource;
 import xyz.vsl.tomcat.secdb.crypto.Helper;
+import xyz.vsl.tomcat.secdb.crypto.SaltedKey;
 
 import javax.naming.Context;
 import javax.naming.Name;
@@ -37,7 +38,7 @@ public class Tomcat7 extends DataSourceFactory {
                 continue;
             Object o = properties.get(property);
             if (o instanceof String) {
-                String value = Helper.decryptAll((String)o, property, properties);
+                String value = Helper.decryptAll((String)o, property, properties, SaltedKey.FACTORY);
                 props.setProperty(property, value);
             } else {
                 props.put(property, o);
