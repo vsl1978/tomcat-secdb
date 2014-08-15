@@ -1,7 +1,6 @@
 package xyz.vsl.tomcat.secdb;
 
 import org.apache.naming.ResourceRef;
-import xyz.vsl.tomcat.secdb.crypto.Helper;
 
 import javax.naming.Context;
 import javax.naming.Name;
@@ -16,6 +15,8 @@ import java.util.Hashtable;
  */
 public class C3P0 extends BaseObjectFactory implements ObjectFactory {
 
+    public static final String C3P0_DS = "com.mchange.v2.c3p0.ComboPooledDataSource";
+
     @Override
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
         if (!(obj instanceof ResourceRef))
@@ -23,7 +24,7 @@ public class C3P0 extends BaseObjectFactory implements ObjectFactory {
         ResourceRef resourceRef = decryptResourceRef((ResourceRef) obj, name);
 
         ResourceRef c3p0 = new ResourceRef(
-                "com.mchange.v2.c3p0.ComboPooledDataSource",
+                C3P0_DS,
                 getString(resourceRef, ResourceRef.DESCRIPTION),
                 getString(resourceRef, ResourceRef.SCOPE),
                 getString(resourceRef, ResourceRef.AUTH),
@@ -35,7 +36,7 @@ public class C3P0 extends BaseObjectFactory implements ObjectFactory {
             RefAddr ra = (RefAddr) en.nextElement();
             String type = ra.getType();
             if ("type".equals(type))
-                c3p0.add(new StringRefAddr(type, "com.mchange.v2.c3p0.ComboPooledDataSource"));
+                c3p0.add(new StringRefAddr(type, C3P0_DS));
             else if ("factory".equals(type))
                 c3p0.add(new StringRefAddr(type, "org.apache.naming.factory.BeanFactory"));
             else if (ResourceRef.DESCRIPTION.equals(type))
@@ -60,7 +61,7 @@ public class C3P0 extends BaseObjectFactory implements ObjectFactory {
 
     private boolean getBool(ResourceRef resourceRef, String name) {
         String s = getString(resourceRef, name);
-        return s != null && "true".equalsIgnoreCase(s.toLowerCase());
+        return s != null && "true".equals(s.toLowerCase());
     }
 
 }
